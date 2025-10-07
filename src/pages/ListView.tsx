@@ -15,10 +15,12 @@ const ListView = () => {
 
   useEffect(() => {
     filterAndSortPokemon();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, sortBy, sortOrder, allPokemon]);
 
   useEffect(() => {
     updateDisplayedPokemon();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredPokemon, currentPage]);
 
   const getPokemonNumber = (url: string): number => {

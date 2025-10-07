@@ -17,10 +17,12 @@ const GalleryView = () => {
 
   useEffect(() => {
     filterPokemon();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTypes, pokemonWithTypes]);
 
   useEffect(() => {
     updateDisplayedPokemon();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredPokemon, currentPage]);
 
   const filterPokemon = () => {
