@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usePokemon } from '../context/PokemonContext';
 import { PokemonListItem } from '../api/pokemon';
 import PokemonCard from '../components/PokemonCard';
@@ -13,25 +13,15 @@ const ListView = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const ITEMS_PER_PAGE = 54;
 
-  useEffect(() => {
-    filterAndSortPokemon();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, sortBy, sortOrder, allPokemon]);
-
-  useEffect(() => {
-    updateDisplayedPokemon();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredPokemon, currentPage]);
-
-  const getPokemonNumber = (url: string): number => {
+  const getPokemonNumber = useCallback((url: string): number => {
     const parts = url.split('/').filter(part => part);
     return parseInt(parts[parts.length - 1]);
-  };
+  }, []);
 
-  const filterAndSortPokemon = () => {
+  const filterAndSortPokemon = useCallback(() => {
     let result = [...allPokemon];
 
-    // Filter 
+    // Filter
     if (searchQuery.trim()) {
       result = result.filter(pokemon =>
         pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -51,15 +41,23 @@ const ListView = () => {
     });
 
     setFilteredPokemon(result);
-    setCurrentList(result); 
+    setCurrentList(result);
     setCurrentPage(1); //  first page when filtering changes
-  };
+  }, [searchQuery, sortBy, sortOrder, allPokemon, getPokemonNumber, setCurrentList]);
 
-  const updateDisplayedPokemon = () => {
+  const updateDisplayedPokemon = useCallback(() => {
     const startIndex = 0;
     const endIndex = currentPage * ITEMS_PER_PAGE;
     setDisplayedPokemon(filteredPokemon.slice(startIndex, endIndex));
-  };
+  }, [filteredPokemon, currentPage, ITEMS_PER_PAGE]);
+
+  useEffect(() => {
+    filterAndSortPokemon();
+  }, [filterAndSortPokemon]);
+
+  useEffect(() => {
+    updateDisplayedPokemon();
+  }, [updateDisplayedPokemon]);
 
   const loadMore = () => {
     setCurrentPage(prev => prev + 1);

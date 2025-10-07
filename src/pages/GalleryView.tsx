@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usePokemon } from '../context/PokemonContext';
 import PokemonCardWithType from '../components/PokemonCardWithType';
 
@@ -15,17 +15,7 @@ const GalleryView = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const ITEMS_PER_PAGE = 54;
 
-  useEffect(() => {
-    filterPokemon();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTypes, pokemonWithTypes]);
-
-  useEffect(() => {
-    updateDisplayedPokemon();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredPokemon, currentPage]);
-
-  const filterPokemon = () => {
+  const filterPokemon = useCallback(() => {
     let filtered;
     if (selectedTypes.length === 0) {
       filtered = pokemonWithTypes;
@@ -35,15 +25,23 @@ const GalleryView = () => {
       );
     }
     setFilteredPokemon(filtered);
-    setCurrentList(filtered.map(item => item.pokemon)); // Update context with current filtered list
-    setCurrentPage(1); 
-  };
+    setCurrentList(filtered.map(item => item.pokemon));
+    setCurrentPage(1);
+  }, [selectedTypes, pokemonWithTypes, setCurrentList]);
 
-  const updateDisplayedPokemon = () => {
+  const updateDisplayedPokemon = useCallback(() => {
     const startIndex = 0;
     const endIndex = currentPage * ITEMS_PER_PAGE;
     setDisplayedPokemon(filteredPokemon.slice(startIndex, endIndex));
-  };
+  }, [filteredPokemon, currentPage, ITEMS_PER_PAGE]);
+
+  useEffect(() => {
+    filterPokemon();
+  }, [filterPokemon]);
+
+  useEffect(() => {
+    updateDisplayedPokemon();
+  }, [updateDisplayedPokemon]);
 
   const loadMore = () => {
     setCurrentPage(prev => prev + 1);
