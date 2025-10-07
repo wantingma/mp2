@@ -109,8 +109,7 @@ const ListView = () => {
           <PokemonCard key={pokemon.name} pokemon={pokemon} />
         ))}
       </div>
-      
-      {/* load next 54 cards */}
+
       {hasMore && (
         <div className="more">
           <button onClick={loadMore}>
